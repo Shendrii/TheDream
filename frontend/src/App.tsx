@@ -1,8 +1,15 @@
-import React from 'react'
+import { useState } from 'react'
 
-const App = () => {
+import './App.css'
+
+function App() {
+  const [count, setCount] = useState(0)
+
   return (
-    <div>App</div>
+    <>
+      <div>try</div>
+      <div>try</div>
+    </>
   )
 }
 
