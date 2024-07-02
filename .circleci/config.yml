@@ -1,5 +1,5 @@
-
-
+name: CI
+on: [push]
 jobs:
 front_test:
     executor: executor_without_storage_services
