@@ -1,0 +1,43 @@
+
+
+jobs:
+front_test:
+    executor: executor_without_storage_services
+    resource_class: medium+
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *skip_no_affected_job
+      - *restore_yarn_cache
+      - restore_cache:
+          key: 'eslint-{{ .Environment.CACHE_VERSION }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum ".eslintrc.js" }}'
+      - run:
+          name: Run test commands for frontend
+          command: |
+            yarn lint
+            yarn depcruise front
+            yarn typecheck
+            yarn test
+      - save_cache:
+          key: 'eslint-{{ .Environment.CACHE_VERSION }}-{{ checksum "package.json" }}-{{ checksum "yarn.lock" }}-{{ checksum ".eslintrc.js" }}'
+          paths:
+            - ./.eslintcache
+danger:
+    executor: executor_without_storage_services
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: git fetch --unshallow
+      - *skip_no_affected_job
+      - *restore_bundler_cache
+      - run: bundle exec danger --fail-on-errors=true
+prettier:
+    executor: executor_without_storage_services
+    steps:
+      - attach_workspace:
+          at: ~/
+      - *skip_no_affected_job
+      - *restore_yarn_cache
+      - run:
+          command: npx prettier -c .
+          no_output_timeout: 20m
